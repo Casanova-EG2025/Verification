@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحقق من تحديث بيانات منظومة العلاج الطبي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #eef2f5;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 25px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        .search-section {
+            display: flex; /* تحويل إلى Flexbox لترتيب العناصر أفقياً */
+            flex-wrap: wrap; /* السماح للعناصر بالانتقال لسطر جديد إذا لم يكن هناك مساحة */
+            gap: 10px; /* مسافة بين العناصر */
+            margin-bottom: 25px;
+            align-items: center; /* محاذاة العناصر رأسياً في المنتصف */
+            justify-content: center; /* توسيط العناصر أفقياً */
+        }
+        input[type="text"] {
+            flex-grow: 1; /* السماح لحقل الإدخال بشغل المساحة المتبقية */
+            min-width: 200px; /* ضمان أن حقل الإدخال لا يصبح صغيراً جداً */
+            padding: 14px 18px;
+            border: 1px solid #cdd4da;
+            border-radius: 8px;
+            font-size: 1.1em;
+            text-align: right;
+            direction: rtl;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 14px 25px; /* تقليل البادينج قليلاً ليناسب الصف */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-shrink: 0; /* منع الأزرار من الانكماش */
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        /* تنسيقات زر المسح */
+        .clear-button {
+            background-color: #6c757d; /* لون رمادي لزر المسح */
+        }
+        .clear-button:hover {
+            background-color: #5a6268;
+        }
+
+        #errorMessage {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 0.95em;
+            min-height: 20px;
+        }
+        .results-section {
+            margin-top: 30px;
+            border-top: 1px solid #eceff1;
+            padding-top: 25px;
+            text-align: right;
+        }
+        .results-section h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+        .result-item {
+            background-color: #f8fcfd;
+            border: 1px solid #dbe9f6;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            line-height: 1.8;
+        }
+        .result-item p {
+            margin: 5px 0;
+            color: #4a4a4a;
+        }
+        .result-item strong {
+            color: #007bff;
+        }
+        .no-results {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="G:\Other computers\Server\02-Medical Sys\06-Form Designing\Logo\EETC_Logo.png" width="150" height="auto" class="logo">
+
+        <h1>منظومة العلاج الطبي</h1>
+	<h1>التحقق من تحديث البيانات</h1>
+
+        <div class="search-section">
+            <input type="text" id="nationalIdInput" placeholder="أدخل الرقم القومي هنا" aria-label="أدخل الرقم القومي" pattern="[0-9]{14}" title="الرقم القومي يجب أن يتكون من 14 رقماً" inputmode="numeric">
+            <button id="searchButton">بحث</button>
+            <button id="clearButton" class="clear-button">مسح</button> </div>
+
+        <div id="errorMessage" role="alert" aria-live="polite"></div>
+
+        <div class="results-section">
+            <h2>نتائج البحث:</h2>
+            <div id="searchResults">
+                <p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyPxj9ND-JmtoAoZ2uQjdhwAT7sGB-Zmj2vmpMTTPbDoXSF2PSjQ2IALPGY5YW9vxU4/exec'; // لا تنس تغيير هذا!
+
+        document.getElementById('searchButton').addEventListener('click', searchData);
+        // إضافة مستمع لحدث النقر لزر المسح الجديد
+        document.getElementById('clearButton').addEventListener('click', clearSearch);
+
+        document.getElementById('nationalIdInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchData();
+            }
+        });
+
+        async function searchData() {
+            const nationalIdInput = document.getElementById('nationalIdInput');
+            const nationalId = nationalIdInput.value.trim();
+            const searchResultsDiv = document.getElementById('searchResults');
+            const errorMessageDiv = document.getElementById('errorMessage');
+
+            errorMessageDiv.textContent = '';
+            searchResultsDiv.innerHTML = '<p class="no-results">جارٍ البحث...</p>';
+
+            if (!nationalId) {
+                errorMessageDiv.textContent = 'الرجاء إدخال الرقم القومي.';
+                searchResultsDiv.innerHTML = '<p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>';
+                nationalIdInput.focus();
+                return;
+            }
+
+            if (!/^\d{14}$/.test(nationalId)) {
+                errorMessageDiv.textContent = 'الرقم القومي يجب أن يتكون من 14 رقماً فقط.';
+                searchResultsDiv.innerHTML = '<p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>';
+                nationalIdInput.focus();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${appsScriptUrl}?nationalId=${nationalId}`);
+                if (!response.ok) {
+                    throw new Error(`خطأ في الشبكة أو الخادم: ${response.status} ${response.statusText}`);
+                }
+                const data = await response.json();
+
+                if (data.error) {
+                    errorMessageDiv.textContent = `خطأ: ${data.error}`;
+                    searchResultsDiv.innerHTML = '<p class="no-results">فشل البحث. يرجى مراجعة رسالة الخطأ أعلاه.</p>';
+                } else if (data.found) {
+                    searchResultsDiv.innerHTML = `
+                        <div class="result-item">
+                            <p><strong>الاسم:</strong> ${data.name}</p>
+                            <p><strong>حالة العمل:</strong> ${data.work_status}</p>
+                            <p><strong>المنطقة:</strong> ${data.dist}</p>
+                        </div>
+                    `;
+                } else {
+                    searchResultsDiv.innerHTML = '<p class="no-results">لم يتم العثور على بيانات لهذا الرقم القومي. قد يكون بسبب أن المشترك لم يحدث بياناته أو أن الرقم الذي أدخلته غير صحيح</p>';
+                }
+            } catch (error) {
+                console.error('حدث خطأ أثناء الاتصال:', error);
+                errorMessageDiv.textContent = 'حدث خطأ أثناء البحث. الرجاء التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى.';
+                searchResultsDiv.innerHTML = '<p class="no-results">تعذر الاتصال بالخدمة.</p>';
+            }
+        }
+
+        // دالة جديدة لمسح شريط البحث والنتائج
+        function clearSearch() {
+            document.getElementById('nationalIdInput').value = ''; // تفريغ حقل الإدخال
+            document.getElementById('searchResults').innerHTML = '<p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>'; // مسح النتائج
+            document.getElementById('errorMessage').textContent = ''; // مسح رسالة الخطأ
+            document.getElementById('nationalIdInput').focus(); // إعادة التركيز على حقل الإدخال
+        }
+    </script>
+</body>
+</html>
