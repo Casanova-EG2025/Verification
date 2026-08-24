@@ -3,160 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>التحقق من تحديث بيانات منظومة العلاج الطبي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>الاستعلام - المنظومة الطبية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-dark: #211f1d;
+            --color-dark-2: #2b2825;
+            --color-gold: #c9a227;
+            --color-gold-light: #e0bc4f;
+            --grad-accent: linear-gradient(90deg, #4a63e7, #8b47d6);
+            --color-bg: #faf9f7;
+            --color-surface: #ffffff;
+            --color-border: #e8e3d8;
+            --color-text: #2a2622;
+            --color-muted: #7a7468;
+            --color-error: #b3261e;
+            --color-error-bg: #fbeceb;
+        }
+        * { box-sizing: border-box; }
         body {
             font-family: 'Cairo', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #eef2f5;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            color: #333;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 550px;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 25px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-size: 1.8em;
-            font-weight: 700;
-        }
-        .search-section {
-            display: flex; /* تحويل إلى Flexbox لترتيب العناصر أفقياً */
-            flex-wrap: wrap; /* السماح للعناصر بالانتقال لسطر جديد إذا لم يكن هناك مساحة */
-            gap: 10px; /* مسافة بين العناصر */
-            margin-bottom: 25px;
-            align-items: center; /* محاذاة العناصر رأسياً في المنتصف */
-            justify-content: center; /* توسيط العناصر أفقياً */
-        }
-        input[type="text"] {
-            flex-grow: 1; /* السماح لحقل الإدخال بشغل المساحة المتبقية */
-            min-width: 200px; /* ضمان أن حقل الإدخال لا يصبح صغيراً جداً */
-            padding: 14px 18px;
-            border: 1px solid #cdd4da;
-            border-radius: 8px;
-            font-size: 1.1em;
-            text-align: right;
-            direction: rtl;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 14px 25px; /* تقليل البادينج قليلاً ليناسب الصف */
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            flex-shrink: 0; /* منع الأزرار من الانكماش */
-        }
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        /* تنسيقات زر المسح */
-        .clear-button {
-            background-color: #6c757d; /* لون رمادي لزر المسح */
-        }
-        .clear-button:hover {
-            background-color: #5a6268;
+            background: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
         }
 
-        #errorMessage {
-            color: #e74c3c;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 0.95em;
-            min-height: 20px;
+        /* ===== Top bar ===== */
+        .topbar {
+            background: var(--color-dark);
+            padding: 18px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
         }
-        .results-section {
-            margin-top: 30px;
-            border-top: 1px solid #eceff1;
-            padding-top: 25px;
+        .topbar::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0; left: 0;
+            height: 3px;
+            background: var(--grad-accent);
+        }
+        .topbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar .brand img {
+            height: 58px;
+            width: auto;
+        }
+        .topbar .brand-text {
+            color: #f4ede0;
+            font-size: 0.95em;
+            line-height: 1.55;
+        }
+        .topbar .brand-text .company-name {
+            display: block;
+            font-size: 0.85em;
+            color: #c9bfa8;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .topbar .brand-text strong {
+            display: block;
+            font-size: 1.05em;
+            color: #fff;
+        }
+        .topbar nav a {
+            color: #e7dfcd;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-inline-start: 22px;
+            transition: color 0.2s;
+        }
+        .topbar nav a:hover { color: var(--color-gold-light); }
+        .topbar .nav-disabled {
+            color: #7a7468;
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-inline-start: 22px;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* ===== Hero / search band ===== */
+        .hero {
+            background: linear-gradient(180deg, var(--color-dark) 0%, var(--color-dark-2) 100%);
+            padding: 56px 24px 70px;
+            text-align: center;
+        }
+        .hero h1 {
+            color: #fff;
+            font-size: 1.9em;
+            font-weight: 800;
+            margin: 0 0 6px;
+        }
+        .hero .subtitle {
+            color: #cfc6b3;
+            font-size: 1em;
+            margin: 0 0 34px;
+        }
+        .search-box {
+            max-width: 640px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        input[type="text"] {
+            flex: 1 1 260px;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 999px;
+            font-size: 1.05em;
+            text-align: right;
+            direction: rtl;
+            font-family: 'Cairo', sans-serif;
+            background: #fff;
+            color: var(--color-text);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+        }
+        input[type="text"]:focus {
+            outline: 3px solid var(--color-gold-light);
+            outline-offset: 2px;
+        }
+        button {
+            font-family: 'Cairo', sans-serif;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            border-radius: 999px;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+        button:active { transform: translateY(1px); }
+        #searchButton {
+            padding: 16px 34px;
+            font-size: 1.05em;
+            background: var(--color-gold);
+            color: #241f0f;
+            box-shadow: 0 6px 18px rgba(201,162,39,0.35);
+        }
+        #searchButton:hover { filter: brightness(1.08); }
+        #clearButton {
+            padding: 16px 26px;
+            font-size: 1em;
+            background: transparent;
+            color: #e7dfcd;
+            border: 1.5px solid #6b6455;
+        }
+        #clearButton:hover { border-color: var(--color-gold-light); color: var(--color-gold-light); }
+
+        #errorMessage {
+            max-width: 640px;
+            margin: 16px auto 0;
+            color: #ffb4a8;
+            font-weight: 700;
+            font-size: 0.92em;
+            min-height: 18px;
+        }
+
+        /* ===== Results section ===== */
+        .results-wrap {
+            max-width: 760px;
+            margin: -40px auto 60px;
+            padding: 0 20px;
+        }
+        .results-card {
+            background: var(--color-surface);
+            border-radius: 16px;
+            box-shadow: 0 12px 34px rgba(33,31,29,0.12);
+            padding: 34px;
             text-align: right;
         }
-        .results-section h2 {
-            color: #34495e;
-            margin-bottom: 20px;
-            font-size: 1.4em;
+        .section-heading {
+            display: inline-block;
+            font-size: 1.25em;
+            font-weight: 800;
+            color: var(--color-dark);
+            margin: 0 0 6px;
+            position: relative;
+        }
+        .section-heading::after {
+            content: '';
+            display: block;
+            width: 64px;
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 8px;
+            background: var(--grad-accent);
+        }
+        .results-header { margin-bottom: 20px; }
+
+        .result-item {
+            background: #fbf9f4;
+            border: 1px solid var(--color-border);
+            border-inline-start: 4px solid var(--color-gold);
+            padding: 20px 22px;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            line-height: 1.9;
+        }
+        .result-item p { margin: 4px 0; color: #4a4436; }
+        .result-item strong { color: var(--color-dark); }
+
+        .dependent-banner {
+            background: #fdf6e3;
+            border: 1px solid var(--color-gold-light);
+            color: #6b5410;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            line-height: 1.7;
+        }
+
+        .beneficiaries-title {
+            font-size: 1.05em;
+            font-weight: 800;
+            color: var(--color-dark);
+            margin: 26px 0 12px;
+        }
+        .beneficiaries-table-wrapper { overflow-x: auto; border-radius: 10px; }
+        table.beneficiaries-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            background: #fff;
+        }
+        table.beneficiaries-table th,
+        table.beneficiaries-table td {
+            border: 1px solid var(--color-border);
+            padding: 11px;
+            text-align: center;
+        }
+        table.beneficiaries-table th {
+            background: var(--color-dark);
+            color: #f4ede0;
             font-weight: 700;
         }
-        .result-item {
-            background-color: #f8fcfd;
-            border: 1px solid #dbe9f6;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            line-height: 1.8;
+        table.beneficiaries-table tr:nth-child(even) { background: #faf8f2; }
+        table.beneficiaries-table tr.highlight-row { background: #fdf1c8; }
+
+        .no-results { color: var(--color-muted); font-style: italic; margin: 0; }
+
+        /* ===== Footer quick links ===== */
+        .footer-links {
+            max-width: 760px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+            text-align: center;
         }
-        .result-item p {
-            margin: 5px 0;
-            color: #4a4a4a;
+        .footer-links a {
+            display: inline-block;
+            margin: 6px 8px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 1.5px solid var(--color-gold);
+            color: var(--color-dark);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9em;
+            transition: background 0.2s, color 0.2s;
         }
-        .result-item strong {
-            color: #007bff;
+        .footer-links a:hover { background: var(--color-gold); color: #241f0f; }
+        .footer-links .footer-link-disabled {
+            display: inline-block;
+            margin: 6px 8px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 1.5px dashed var(--color-border);
+            color: var(--color-muted);
+            font-weight: 700;
+            font-size: 0.9em;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
-        .no-results {
-            color: #7f8c8d;
-            font-style: italic;
+
+        .site-footer {
+            text-align: center;
+            color: var(--color-muted);
+            font-size: 0.82em;
+            padding: 20px 20px 40px;
+        }
+
+        @media (max-width: 560px) {
+            .topbar { flex-direction: column; gap: 10px; }
+            .hero { padding: 40px 16px 60px; }
+            .results-wrap { margin-top: -30px; }
+            .results-card { padding: 24px 18px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="EETC_Logo.png" width="150" height="auto" class="logo">
+    <div class="topbar">
+        <div class="brand">
+            <img id="brandLogo" src="EETC_Logo.png" alt="شعار الشركة المصرية لنقل الكهرباء" onerror="handleLogoError(this)">
+            <div class="brand-text">
+                <span class="company-name">الشركة المصرية لنقل الكهرباء</span>
+                <strong>المنظومة الطبية</strong>
+                لعلاج العاملين بالشركة وأسرهم
+            </div>
+        </div>
+        <nav>
+            <a href="?">الرئيسية</a>
+            <!-- رابط التسجيل معطل مؤقتًا حتى تشغيل صفحة register -->
+            <span class="nav-disabled" aria-disabled="true" title="التسجيل في المنظومة غير متاح حاليًا">التسجيل في المنظومة</span>
+        </nav>
+    </div>
 
-        <h1>منظومة العلاج الطبي</h1>
-	<h1>التحقق من تحديث البيانات</h1>
-
-        <div class="search-section">
+    <div class="hero">
+        <h1>الاستعلام عن بيانات المشترك</h1>
+        <p class="subtitle">أدخل الرقم القومي للتحقق من حالة تسجيلك وبيانات المستفيدين المرتبطين بك</p>
+        <div class="search-box">
             <input type="text" id="nationalIdInput" placeholder="أدخل الرقم القومي هنا" aria-label="أدخل الرقم القومي" pattern="[0-9]{14}" title="الرقم القومي يجب أن يتكون من 14 رقماً" inputmode="numeric">
             <button id="searchButton">بحث</button>
-            <button id="clearButton" class="clear-button">مسح</button> </div>
-
+            <button id="clearButton">مسح</button>
+        </div>
         <div id="errorMessage" role="alert" aria-live="polite"></div>
+    </div>
 
-        <div class="results-section">
-            <h2>نتائج البحث:</h2>
+    <div class="results-wrap">
+        <div class="results-card">
+            <div class="results-header">
+                <h2 class="section-heading">نتائج البحث</h2>
+            </div>
             <div id="searchResults">
                 <p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>
             </div>
         </div>
     </div>
 
-    <script>
-        const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyPxj9ND-JmtoAoZ2uQjdhwAT7sGB-Zmj2vmpMTTPbDoXSF2PSjQ2IALPGY5YW9vxU4/exec'; // لا تنس تغيير هذا!
+    <div class="footer-links">
+        <!-- رابط التسجيل معطل مؤقتًا حتى تشغيل صفحة register -->
+        <span class="footer-link-disabled" aria-disabled="true" title="التسجيل في المنظومة غير متاح حاليًا">التسجيل في المنظومة</span>
+        <a href="?">العودة للصفحة الرئيسية</a>
+    </div>
 
+    <div class="site-footer">
+        جميع الحقوق محفوظة لفريق تطوير أنظمة الموارد البشرية &copy; <span id="yearSpan"></span>
+    </div>
+
+    <script>
+        /* ============================================================
+           إعدادات التشغيل (الوضع المزدوج)
+           - داخل Google Apps Script: يعمل تلقائيًا عبر google.script.run
+           - على GitHub Pages: ضع رابط نشر تطبيق الويب في gasWebAppUrl
+             (الرابط المنتهي بـ /exec مع صلاحية الوصول: Anyone)
+           - assetsBaseUrl: رابط مجلد الصور على GitHub Pages (يُستخدم فقط
+             إذا فشل تحميل الصورة النسبي داخل Apps Script) مثال:
+             'https://<user>.github.io/<repo>/'
+           ============================================================ */
+        const APP_CONFIG = {
+            gasWebAppUrl: 'https://script.google.com/macros/s/AKfycbyLJWTInUo4BlE_jxFpsofC9TV9NBpbyKDKbSAYovoW3Di9PtnsQKIxgKDAZPRw8hgw/exec',
+            assetsBaseUrl: ''
+        };
+
+        function handleLogoError(img) {
+            const base = (APP_CONFIG.assetsBaseUrl || '').replace(/\/+$/, '');
+            if (base && !img.dataset.fallbackTried) {
+                img.dataset.fallbackTried = '1';
+                img.src = base + '/EETC_Logo.png';
+            }
+        }
+
+        function callServer(fnName, payload) {
+            return new Promise(function(resolve, reject) {
+                if (window.google && google.script && google.script.run) {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)[fnName](payload);
+                    return;
+                }
+                const url = (APP_CONFIG.gasWebAppUrl || '').trim();
+                if (!url) {
+                    reject(new Error('لم يتم ضبط رابط خدمة الاستعلام (gasWebAppUrl).'));
+                    return;
+                }
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({ fn: fnName, payload: payload })
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(out) {
+                    if (out && out.ok) { resolve(out.result); }
+                    else { reject(new Error((out && out.error) || 'خطأ غير معروف من الخادم.')); }
+                })
+                .catch(reject);
+            });
+        }
+
+        document.getElementById('yearSpan').textContent = new Date().getFullYear();
+    </script>
+
+    <script>
         document.getElementById('searchButton').addEventListener('click', searchData);
-        // إضافة مستمع لحدث النقر لزر المسح الجديد
         document.getElementById('clearButton').addEventListener('click', clearSearch);
 
         document.getElementById('nationalIdInput').addEventListener('keypress', function(event) {
@@ -165,7 +409,132 @@
             }
         });
 
-        async function searchData() {
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function buildBeneficiariesTable(beneficiaries, highlightNationalId) {
+            if (!beneficiaries || beneficiaries.length === 0) {
+                return '<p class="no-results">لا يوجد مستفيدين مسجلين.</p>';
+            }
+
+            const rows = beneficiaries.map(b => {
+                const isHighlighted = highlightNationalId && String(b.national_id).trim() === String(highlightNationalId).trim();
+                return `
+                    <tr class="${isHighlighted ? 'highlight-row' : ''}">
+                        <td>${escapeHtml(b.name)}</td>
+                        <td>${escapeHtml(b.national_id)}</td>
+                        <td>${escapeHtml(b.relationship)}</td>
+                        <td>${escapeHtml(b.status)}</td>
+                        <td>${escapeHtml(b.dob)}</td>
+                        <td>${escapeHtml(b.special_needs)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            return `
+                <div class="beneficiaries-table-wrapper">
+                    <table class="beneficiaries-table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الرقم القومي</th>
+                                <th>صلة القرابة</th>
+                                <th>حالة الاستفادة</th>
+                                <th>تاريخ الميلاد</th>
+                                <th>احتياجات خاصة</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function handleSuccess(data) {
+            const searchResultsDiv = document.getElementById('searchResults');
+            const errorMessageDiv = document.getElementById('errorMessage');
+            errorMessageDiv.textContent = '';
+
+            if (data.error) {
+                errorMessageDiv.textContent = `خطأ: ${data.error}`;
+                searchResultsDiv.innerHTML = '<p class="no-results">فشل البحث. يرجى مراجعة رسالة الخطأ أعلاه.</p>';
+                return;
+            }
+
+            if (!data.found) {
+                searchResultsDiv.innerHTML = '<p class="no-results">لم يتم العثور على بيانات لهذا الرقم القومي. قد يكون بسبب أن المشترك لم يحدث بياناته أو أن الرقم الذي أدخلته غير صحيح.</p>';
+                return;
+            }
+
+            if (data.type === 'eligible') {
+                searchResultsDiv.innerHTML = `
+                    <div class="result-item">
+                        <p><strong>الاسم:</strong> ${escapeHtml(data.name)}</p>
+                        ${data.mobile ? `<p><strong>رقم الموبايل:</strong> ${escapeHtml(data.mobile)}</p>` : ''}
+                    </div>
+                    <div class="dependent-banner">
+                        هذا الرقم القومي مسجل ضمن المشتركين المؤهلين للمنظومة الطبية،
+                        لكنه لم يستكمل تسجيله بعد. الرجاء المتابعة مع إدارة المنظومة لإتمام التسجيل.
+                    </div>
+                `;
+                return;
+            }
+
+            if (data.type === 'main') {
+                searchResultsDiv.innerHTML = `
+                    <div class="result-item">
+                        <p><strong>الاسم:</strong> ${escapeHtml(data.name)}</p>
+                        <p><strong>حالة العمل:</strong> ${escapeHtml(data.work_status)}</p>
+                        <p><strong>المنطقة:</strong> ${escapeHtml(data.dist)}</p>
+                    </div>
+                    <div class="beneficiaries-title">المستفيدون من الخدمة الطبية:</div>
+                    ${buildBeneficiariesTable(data.beneficiaries)}
+                `;
+                return;
+            }
+
+            if (data.type === 'dependent') {
+                if (!data.main) {
+                    searchResultsDiv.innerHTML = `
+                        <div class="dependent-banner">
+                            هذا الرقم القومي مسجل كمستفيد (${escapeHtml(data.searched_person.relationship)}: ${escapeHtml(data.searched_person.name)})،
+                            لكن تعذر إيجاد بيانات المشترك الرئيسي المرتبط به. يُرجى مراجعة السجلات يدويًا.
+                        </div>
+                    `;
+                    return;
+                }
+
+                searchResultsDiv.innerHTML = `
+                    <div class="dependent-banner">
+                        هذا الرقم القومي مستفيد (${escapeHtml(data.searched_person.relationship)}: ${escapeHtml(data.searched_person.name)})
+                        تابع للمشترك الرئيسي: ${escapeHtml(data.main.name)}
+                    </div>
+                    <div class="result-item">
+                        <p><strong>الاسم (المشترك الرئيسي):</strong> ${escapeHtml(data.main.name)}</p>
+                        <p><strong>حالة العمل:</strong> ${escapeHtml(data.main.work_status)}</p>
+                        <p><strong>المنطقة:</strong> ${escapeHtml(data.main.dist)}</p>
+                    </div>
+                    <div class="beneficiaries-title">المستفيدون من الخدمة الطبية:</div>
+                    ${buildBeneficiariesTable(data.beneficiaries, data.searched_person.national_id)}
+                `;
+            }
+        }
+
+        function handleError(error) {
+            const searchResultsDiv = document.getElementById('searchResults');
+            const errorMessageDiv = document.getElementById('errorMessage');
+            console.error('حدث خطأ أثناء الاتصال بـ Apps Script:', error);
+            errorMessageDiv.textContent = 'حدث خطأ أثناء البحث. الرجاء التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى.';
+            searchResultsDiv.innerHTML = '<p class="no-results">تعذر الاتصال بالخدمة.</p>';
+        }
+
+        function searchData() {
             const nationalIdInput = document.getElementById('nationalIdInput');
             const nationalId = nationalIdInput.value.trim();
             const searchResultsDiv = document.getElementById('searchResults');
@@ -188,40 +557,16 @@
                 return;
             }
 
-            try {
-                const response = await fetch(`${appsScriptUrl}?nationalId=${nationalId}`);
-                if (!response.ok) {
-                    throw new Error(`خطأ في الشبكة أو الخادم: ${response.status} ${response.statusText}`);
-                }
-                const data = await response.json();
-
-                if (data.error) {
-                    errorMessageDiv.textContent = `خطأ: ${data.error}`;
-                    searchResultsDiv.innerHTML = '<p class="no-results">فشل البحث. يرجى مراجعة رسالة الخطأ أعلاه.</p>';
-                } else if (data.found) {
-                    searchResultsDiv.innerHTML = `
-                        <div class="result-item">
-                            <p><strong>الاسم:</strong> ${data.name}</p>
-                            <p><strong>حالة العمل:</strong> ${data.work_status}</p>
-                            <p><strong>المنطقة:</strong> ${data.dist}</p>
-                        </div>
-                    `;
-                } else {
-                    searchResultsDiv.innerHTML = '<p class="no-results">لم يتم العثور على بيانات لهذا الرقم القومي. قد يكون بسبب أن المشترك لم يحدث بياناته أو أن الرقم الذي أدخلته غير صحيح</p>';
-                }
-            } catch (error) {
-                console.error('حدث خطأ أثناء الاتصال:', error);
-                errorMessageDiv.textContent = 'حدث خطأ أثناء البحث. الرجاء التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى.';
-                searchResultsDiv.innerHTML = '<p class="no-results">تعذر الاتصال بالخدمة.</p>';
-            }
+            callServer('searchDataByNationalId', {nationalId: nationalId})
+                .then(handleSuccess)
+                .catch(handleError);
         }
 
-        // دالة جديدة لمسح شريط البحث والنتائج
         function clearSearch() {
-            document.getElementById('nationalIdInput').value = ''; // تفريغ حقل الإدخال
-            document.getElementById('searchResults').innerHTML = '<p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>'; // مسح النتائج
-            document.getElementById('errorMessage').textContent = ''; // مسح رسالة الخطأ
-            document.getElementById('nationalIdInput').focus(); // إعادة التركيز على حقل الإدخال
+            document.getElementById('nationalIdInput').value = '';
+            document.getElementById('searchResults').innerHTML = '<p class="no-results">الرجاء إدخال الرقم القومي والضغط على "بحث" لعرض النتائج.</p>';
+            document.getElementById('errorMessage').textContent = '';
+            document.getElementById('nationalIdInput').focus();
         }
     </script>
 </body>
