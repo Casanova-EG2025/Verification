@@ -530,8 +530,9 @@
             const searchResultsDiv = document.getElementById('searchResults');
             const errorMessageDiv = document.getElementById('errorMessage');
             console.error('حدث خطأ أثناء الاتصال بـ Apps Script:', error);
-            errorMessageDiv.textContent = 'حدث خطأ أثناء البحث. الرجاء التأكد من الاتصال بالإنترنت والمحاولة مرة أخرى.';
-            searchResultsDiv.innerHTML = '<p class="no-results">تعذر الاتصال بالخدمة.</p>';
+            const detail = (error && error.message) ? error.message : 'تعذر الاتصال بالخدمة.';
+            errorMessageDiv.textContent = 'خطأ في الاتصال: ' + detail;
+            searchResultsDiv.innerHTML = '<p class="no-results">تعذر الاتصال بالخدمة. راجع تفاصيل الخطأ أعلاه.</p>';
         }
 
         function searchData() {
